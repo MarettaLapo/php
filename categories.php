@@ -25,7 +25,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link href="..\\css\\categories_css.css" rel="stylesheet" type="text/css">
+    <link href="css/categories_css.css" rel="stylesheet" type="text/css">
     <title>Категории товаров</title>
 </head>
 <body>
@@ -34,7 +34,7 @@
             do
             {
         ?>
-            <a href="..\\products.php?id=<?php echo $item["category_id"];?>">
+            <a href="products.php?id=<?php echo $item["category_id"];?>">
                 <div class="card_wrap">
                     <div class="title"> <!--название категории-->
                         <?php echo $item['category_name']?>

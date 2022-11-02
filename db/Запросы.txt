@@ -1,0 +1,76 @@
+1. Список категорий
+	select ft.category_id, c.name as category_name, COUNT(ft.product_id) as product_count
+	from(select *
+	from product_category_main pcm
+	union ALL
+	select *
+	from product_category pc) ft
+	join category c on ft.category_id = c.id
+	join product p on ft.product_id = p.id
+	where p.is_avaible = 1
+	GROUP by category_name
+	ORDER by product_count DESC 
+
+2. Категория с товарами
+	select c.name as category_name, c.description as category_description, p.id as product_id, p.name as product_name,
+	c1.name as category_main, i.alt as image_main, i.path as image_main_path
+	from(select *
+	from product_category_main pcm
+	union ALL
+	select *
+	from product_category pc) ft
+	join category c on ft.category_id = c.id
+	join product p on ft.product_id = p.id
+	join product_image_main pim on pim.product_id = p.id
+	join image i on pim.image_id = i.id
+	join product_category_main pcm on pcm.product_id = p.id
+	join category c1 on c1.id = pcm.category_id
+	WHERE c.id = 1 and p.is_avaible = 1
+	ORDER by p.id;
+
+3.Выбранный товар
+	!Основная категория + основная картинка
+ 		select p.name as product_name,  i.alt as image_main, i.path as image_main_path, c.id as category_id, c.name as category_name, p.price_now, p.price_full,
+		p.price_promocode, p.description as product_description
+		from product p
+		join product_image_main pim on pim.product_id = p.id
+		join image i on pim.image_id = i.id
+		join product_category_main pcm on pcm.product_id = p.id
+		join category c on pcm.category_id = c.id
+		WHERE p.id = 1;
+	!Дополнительные картинки
+		select i.alt as image, i.path as image_path
+		from image i
+		join product_image pi on pi.image_id = i.id
+		join product p on pi.product_id = p.id
+		WHERE p.id = 1;
+	!Дополнительные категории
+		select c.id as category_id, c.name as category_name
+		from category c
+		join product_category pc on pc.category_id = c.id
+		join product p on pc.product_id = p.id
+		WHERE p.id = 1;
+
+4. Категории, где товаров больше или равно 2 
+	select ft.category_id, c.name as category_name, COUNT(ft.product_id) as product_count
+	from(select *
+	from product_category_main pcm
+	union ALL
+	select *
+	from product_category pc) ft
+	join category c on ft.category_id = c.id
+	join product p on ft.product_id = p.id
+	where p.is_avaible = 1
+	GROUP by category_name HAVING product_count >= 2
+	ORDER by product_count DESC 
+
+5. Список категорий с пустыми категориями
+	select ft.category_id, c.name as category_name, COUNT(ft.product_id) as product_count
+	from(select *
+	from product_category_main pcm
+	union ALL
+	select *
+	from product_category pc) ft
+	right join category c on ft.category_id = c.id
+	GROUP by category_name
+	ORDER by product_count DESC 
