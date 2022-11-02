@@ -23,25 +23,47 @@
 	select *
 	from product_category pc) ft
 	join category c on ft.category_id = c.id
-    where c.id = ?";
-    if (isset($_GET['page'])){
+    join product p on ft.product_id = p.id
+    where p.is_avaible = 1 and c.id = ? ";
+    if (isset($_GET['page']))
+    {
         $page = $_GET['page'];
-    }else {
+    }else 
+    {
         $page = 1;
     }
     $kol = 12;
     $art = ($page * $kol) - $kol;
     $a = sql($sq);
     $row = mysqli_fetch_row($a);
+    if($row === false or $row === null
+    ){
+        http_response_code(404);
+        include('..\\site_php\\404.php');
+        die();
+    }
     $total = $row[0];
     $str_pag = ceil($total / $kol);
     $id = $_GET['id'];
-    $stmt = mysqli_prepare($link, $sql);
-    mysqli_stmt_bind_param($stmt, 'iii', $_GET["id"],$art, $kol);
-    mysqli_stmt_execute($stmt);
-    $cat = mysqli_stmt_get_result($stmt);
+    if(intval($id)){
+        $stmt = mysqli_prepare($link, $sql);
+        mysqli_stmt_bind_param($stmt, 'iii',$id, $art, $kol);
+        mysqli_stmt_execute($stmt);
+        $cat = mysqli_stmt_get_result($stmt);
+    }
+    else{
+        http_response_code(404);
+        include('..\\site_php\\404.php');
+        die();
+    }
     mysqli_close($link);
     $item = mysqli_fetch_assoc($cat);
+    if($item === false or $item === null)
+    {
+        http_response_code(404);
+        include('..\\site_php\\404.php');
+        die();
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -52,6 +74,22 @@
 </head>
 <body>
     <div class="main_wrap">
+    <div class="hreff">
+            <div class="hreff_bread">
+                <a href="categories.php">Категории товаров</a>
+                    /
+                <a href="<?php 
+                    echo ((!empty($_SERVER['HTTPS'])) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];?>">
+                    <?php echo $item['category_name'];?>
+                </a>
+            </div>
+            <div class="hreff__a">
+                <a href="categories.php">
+                    Назад
+                </a>
+            </div>
+        </div>
+
         <div class="card_wrap">
             <div class="title">
                 <?php echo $item['category_name']?>
@@ -63,7 +101,8 @@
         <div class="wrap">
                 <?php 
                 $counter = 1;
-                do{
+                do
+                {
                     if($counter % 3 == 1){
                         echo "<div class='row'>";
                     }
@@ -97,7 +136,8 @@
         </div>
         <div class="hrefs">
         <?php 
-            for($i = 1; $i <= $str_pag; $i++){
+            for($i = 1; $i <= $str_pag; $i++)
+            {
                 echo "<a href=products.php?id=".$id."&page=".$i."> Страница ".$i." </a>";
             }
         ?>

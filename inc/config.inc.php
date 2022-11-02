@@ -8,28 +8,41 @@ const DB_NAME = "db_site";
 $link = mysqli_connect(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_NAME);
 if ($link == false){
     print("Ошибка: Невозможно подключиться к MySQL " . mysqli_connect_error());
+    http_response_code(404);
+    include('..//404.php');
+    die();
 }
 
-function sql($sql){
+function sql($str){
     global $link;
-    if(!$stmt = mysqli_prepare($link, $sql)){
+    $i = ($_GET['id']);
+    if(intval($i)){
+        $stmt = $link ->stmt_init();
+        if($stmt->prepare($str) === false or $stmt->bind_param('i', $i) === false
+        or $stmt->execute() === false or ($result = mysqli_stmt_get_result($stmt)) === false){
+            http_response_code(404);
+            include('..\\site_php\\404.php');
+            die();
+        }
+        else{
+            return $result;
+        }  
+    }else{
         http_response_code(404);
-        include('..//404.php');
+        include('..\\site_php\\404.php');
         die();
-    }
-    mysqli_stmt_bind_param($stmt, 'i', $_GET["id"]); //isset??
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    return $result;
+    }  
 }
-function price($string){
+function price($string)
+{
     $new_string = explode(".", $string);
-    if ($new_string[1] == "00") {
+    if ($new_string[1] == "00") 
+    {
         $output = $new_string[0];
     }
-    else{
+    else
+    {
         $output = implode(".", $new_string);
     }
     return $output;
 }
-?>

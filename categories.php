@@ -7,16 +7,19 @@
 	select *
 	from product_category pc) ft
 	join category c on ft.category_id = c.id
+    join product p on ft.product_id = p.id
+    where p.is_avaible = 1
 	GROUP by category_name
-	ORDER by product_count DESC";
+	ORDER by product_count DESC ";
     $cat = mysqli_query($link, $sql);
+    $item = mysqli_fetch_array($cat);
     mysqli_close($link);
-    if(!$cat){
+    if($cat === false or $cat === null)
+    {
         http_response_code(404);
-        include('..//404.php');
+        include('..\\site_php\\404.php');
         die();
     }
-    
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -28,7 +31,8 @@
 <body>
     <div class="wrap">
         <?php
-            while($item = mysqli_fetch_array($cat)){
+            do
+            {
         ?>
             <a href="..\\products.php?id=<?php echo $item["category_id"];?>">
                 <div class="card_wrap">
@@ -42,6 +46,7 @@
             </a>
         <?php
             }
+            while($item = mysqli_fetch_array($cat));
         ?>
     </div>
 </body>

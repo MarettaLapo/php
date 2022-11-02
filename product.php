@@ -1,5 +1,5 @@
 <?php
-    require "..\\site_php\\inc\\config.inc.php"; 
+    require "..\\site_php\\inc\\config.inc.php";
     $sql_main = 'select p.name as product_name,  i.alt as image_main, i.path as image_main_path, c.id as category_id, c.name as category_name, p.price_now, p.price_full,
     p.price_promocode, p.description as product_description
     from product p
@@ -21,21 +21,44 @@
     join product p on pi.product_id = p.id
     WHERE p.id = ?;';
 
+    
     $main = mysqli_fetch_assoc(sql($sql_main));
+    if($main === false or $main === null)
+    {
+        http_response_code(404);
+        include('..\\site_php\\404.php');
+        die();
+    }
     $add_cat = sql($sql_cat); #категории
     $add_img = sql($sql_img); #картинки
-    
-    mysqli_close($link);
 
     $now = price($main["price_now"]);
     $full = price($main["price_full"]);
     $promocode = price($main["price_promocode"]);
+    $id = $main['category_id'];
+    if(!isset($_SERVER['HTTP_REFERER'])){ #прямой переход
+        $url = "href=products.php?id=$id";
+        $name = $main['category_name'];
+    }
+    else{
+        $pars = $_SERVER['HTTP_REFERER'];
+        $pars = explode('//', $pars);
+        $url = array_pop($pars);
+        $new = explode('?', $url);
+        $new = explode('&', $new[1]);
+        $new = substr($new[0], -1); 
+        $cat_name = "select c.name as category_name from category c where c.id=$new";
+        $name = mysqli_fetch_assoc(mysqli_query($link, $cat_name));
+        $url="href=$url";
+        $name = $name['category_name']; 
+    }
+    mysqli_close($link);
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link href="..\\css\\product_css.css" rel="stylesheet" type="text/css">
+    <link href="css/product_css.css" rel="stylesheet" type="text/css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Raleway&display=swap" rel="stylesheet">
@@ -45,12 +68,30 @@
     <title><?php echo $main['product_name']?></title>
 </head>
 <body>
+        <div class="hreff">
+            <div class="hreff_bread">
+                <a href="categories.php">Категории товаров</a>
+                    /
+                <a <?php echo $url;?>><?php echo $name;?></a>
+                    /
+                <a href="<?php 
+                    echo ((!empty($_SERVER['HTTPS'])) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];?>">
+                    <?php echo $main['product_name'];?>
+                </a>
+            </div>
+            <div class="hreff__back">
+                <a <?php echo $url;?>>
+                    Назад
+                </a>
+            </div>
+        </div>
     <div class="wrap">
         <div class="product">
             <div class="product__preview">
                 <div class="product__gallery">
                     <?php
-                    while($img = mysqli_fetch_array($add_img)){
+                    while($img = mysqli_fetch_array($add_img))
+                    {
                     ?>
                         <div class="product__gallery-image">
                             <img src="picture/<?php echo $img['image_path']?>" alt="<?php echo $img['image']?>">
@@ -76,7 +117,8 @@
                     <a href="..\\products.php?id=<?php echo $main["category_id"];?>" class="product__categories product__categories--left">
                         <?php echo $main["category_name"];?></a>
                     <?php
-                        while($cat = mysqli_fetch_array($add_cat)){
+                        while($cat = mysqli_fetch_array($add_cat))
+                        {
                         ?>
                             <a href="..\\products.php?id=<?php echo $cat["category_id"];?>">
                                 <?php echo $cat["category_name"];?>
