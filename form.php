@@ -2,28 +2,28 @@
     require "..\\site_php\\inc\\config.form.php"; 
 
     if(isset($_COOKIE['name'])){
-        $name = $_COOKIE['name'];
+        $name = clearStr($_COOKIE['name']);
     }
     else{
         $name = "";
     }
 
     if(isset($_COOKIE['email'])){
-        $email = $_COOKIE['email'];
+        $email = clearStr($_COOKIE['email']);
     }
     else{
         $email = "";
     }
 
     if(isset($_COOKIE['year'])){
-        $year = $_COOKIE['year'];
+        $year = clearInt($_COOKIE['year']);
     }
     else{
         $year = "";
     }
 
     if(isset($_COOKIE['sex'])){
-        $sex = $_COOKIE['sex'];
+        $sex = clearStr($_COOKIE['sex']);
     }
     else{
         $sex = "";

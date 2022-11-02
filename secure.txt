@@ -26,4 +26,26 @@
             err(); //перенаправление на страницу с ошибкой
 		}
 
-			
+Защита от XSS уязвимостей
+Валидация всех входных данных:
+function clearStr($str){ //строки
+    global $link;
+    $str = trim(strip_tags($str));
+    return mysqli_real_escape_string($link, $str);
+}
+function clearInt($val){ //числа
+    global $link;
+    return abs((int)$val);
+}
+сравнение с регулярными выражениями:
+    $pattern_name = '/^[a-zA-Z]|[А-ЯЁа-яё]*$/';
+    $pattern_text = '/^[А-ЯЁ]|[а-яё]|[a-z]|[A-Z]|[0-9]*\.*\!*\?*\,*\(*\)*$/';
+    $pattern_mail = "/^[a-z]|[A-Z]|[0-9]|[_.+-]+@[a-z]|[A-Z]|[0-9-]+\.[a-z]|[A-Z]|[0-9]|[-.]+$/";
+	
+Фильтрация COOKIES
+    if(isset($_COOKIE['name'])){
+        $name = clearStr($_COOKIE['name']);
+    }
+    else{
+        $name = "";
+    }
