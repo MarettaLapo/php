@@ -16,9 +16,7 @@
     mysqli_close($link);
     if($cat === false or $cat === null)
     {
-        http_response_code(404);
-        include('..\\site_php\\404.php');
-        die();
+        err();
     }
 ?>
 <!DOCTYPE html>

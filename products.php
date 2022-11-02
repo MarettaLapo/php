@@ -25,22 +25,21 @@
 	join category c on ft.category_id = c.id
     join product p on ft.product_id = p.id
     where p.is_avaible = 1 and c.id = ? ";
-    if (isset($_GET['page']))
-    {
+    if (isset($_GET['page'])){
         $page = $_GET['page'];
-    }else 
-    {
+        if(!intval($page)){
+            err();
+        }
+    }
+    else{
         $page = 1;
     }
     $kol = 12;
     $art = ($page * $kol) - $kol;
     $a = sql($sq);
     $row = mysqli_fetch_row($a);
-    if($row === false or $row === null
-    ){
-        http_response_code(404);
-        include('..\\site_php\\404.php');
-        die();
+    if($row === false or $row === null){
+        err();
     }
     $total = $row[0];
     $str_pag = ceil($total / $kol);
@@ -52,17 +51,13 @@
         $cat = mysqli_stmt_get_result($stmt);
     }
     else{
-        http_response_code(404);
-        include('..\\site_php\\404.php');
-        die();
+        err();
     }
     mysqli_close($link);
     $item = mysqli_fetch_assoc($cat);
     if($item === false or $item === null)
     {
-        http_response_code(404);
-        include('..\\site_php\\404.php');
-        die();
+        err();
     }
 ?>
 <!DOCTYPE html>

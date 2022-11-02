@@ -9,7 +9,7 @@ $link = mysqli_connect(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_NAME);
 if ($link == false){
     print("Ошибка: Невозможно подключиться к MySQL " . mysqli_connect_error());
     http_response_code(404);
-    include('..//404.php');
+    include('..\\site_php\\404.php');
     die();
 }
 
@@ -45,4 +45,9 @@ function price($string)
         $output = implode(".", $new_string);
     }
     return $output;
+}
+function err(){
+    http_response_code(404);
+    include('..\\site_php\\404.php');
+    die();
 }

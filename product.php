@@ -25,9 +25,7 @@
     $main = mysqli_fetch_assoc(sql($sql_main));
     if($main === false or $main === null)
     {
-        http_response_code(404);
-        include('..\\site_php\\404.php');
-        die();
+        err();
     }
     $add_cat = sql($sql_cat); #категории
     $add_img = sql($sql_img); #картинки
