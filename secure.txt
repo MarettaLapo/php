@@ -1,0 +1,29 @@
+Защита от SQL injection
+ 1.Использование подготавливаемых запросов и проверка на возможную ошибку(false),
+ проверка $_GET перед запросом
+ $i = ($_GET['id']); 
+    if(intval($i)){ //число ли это
+        $stmt = $link ->stmt_init();
+        if($stmt->prepare($str) === false or $stmt->bind_param('i', $i) === false
+        or $stmt->execute() === false or ($result = mysqli_stmt_get_result($stmt)) === false){
+            err(); //перенаправление на страницу с ошибкой
+        }
+        else{
+            return $result;
+        }  
+    }else{
+        err(); //перенаправление на страницу с ошибкой
+    }
+ 
+ 2. Проверка mysqli_fetch_assoc() на null или false
+	if($main === false or $main === null)
+    {
+        err(); //перенаправление на страницу с ошибкой
+    }
+3. При постраничной навигации проверка номера страницы($page)
+        $page = $_GET['page'];
+        if(!intval($page)){
+            err(); //перенаправление на страницу с ошибкой
+		}
+
+			
